@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Events App</title>
+</head>
+<body>
+
+    <div>
+        <h2>All Events</h2>
+        <ul id="events" />
+    </div>
+
+    <div>
+        <h2>All Participants</h2>
+        <ul id="participants" />
+    </div>
+    <div>
+        <h2>Search by ID</h2>
+        <input type="text" id="EventId" size="5" />
+        <input type="button" value="Search" onclick="find();" />
+        <p id="event" />
+    </div>
+
+    Add an event:
+
+    <form class="form-horizontal" data-bind="submit: addEvent">
+        <div class="form-group">
+            <label for="inputTitle">Title</label>
+            <div>
+                <label>Title: </label>
+                <input type="text" id="inputTitle" data-bind="value:Title" />
+            </div>
+            <div>
+                <label>Description: </label>
+                <input type="text" id="inputDescription" data-bind="value:Description" />
+            </div>
+            <div>
+                <label>Location: </label>
+                <input type="text" id="inputLocation" data-bind="value:Location" />
+            </div>
+            <div>
+                <label>Seats: </label>
+                <input type="text" id="inputSeats" data-bind="value:Seats" />
+            </div>
+            <div>
+                <label>Start Time: </label>
+                <input type="text" id="inputStart" data-bind="value:Start" />
+            </div>
+            <div>
+                <label>End Time: </label>
+                <input type="text" id="inputEnd" data-bind="value:End" />
+            </div>
+            <div>
+                <label>Owner ENT: </label>
+                <input type="text" id="inputOwnerENT" data-bind="value:OwnerENT" />
+            </div>
+            <div>
+                <label>Block Duration: </label>
+                <input type="text" id="inputBlockDuration" data-bind="value:BlockDuration" />
+            </div>
+        </div>
+        <button type="button" class="btn btn-default" onclick="addEvent()">Submit</button>
+    </form>
+    
+    <!--<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>-->
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+    <script>
+        var uri = 'api/Events';
+        var uri2 = 'api/Participants';
+
+    $(document).ready(function () {
+        // Send an AJAX request
+        $.getJSON(uri)
+            .done(function (data) {
+                // On success, 'data' contains a list of products.
+                $.each(data, function (key, item) {
+                    // Add a list item for the product.
+                    $('<li>', { text: formatItem(item) }).appendTo($('#events'));
+                });
+            });
+
+        $.getJSON(uri2)
+            .done(function (data) {
+                // On success, 'data' contains a list of products.
+                $.each(data, function (key, item) {
+                    // Add a list item for the product.
+                    $('<li>', { text: formatItem2(item) }).appendTo($('#participants'));
+                });
+            });
+    });
+
+    function formatItem(item) {
+        return item.Title + ': in the ' + item.Location + ' Description: ' + item.Description + ' Starting at: ' + item.StartDateTime + ' Ending at: ' + item.EndDateTime + ' OwnerENT: ' + item.OwnerENT + ' Seats: ' + item.Seats + ' Duration: ' + item.BlockDuration;
+    }
+    function formatItem2(item) {
+        return item.ParticipantENT + ' BlockId: ' + item.BlockId + ' SeatId: ' + item.SeatId + ' EventId: ' + item.EventId;
+    }
+
+    function addEvent() {
+        alert('boom')
+        var event = { Title: inputTitle.value.toString(), Description: inputDescription.value.toString(), Location: inputLocation.value.toString(), OwnerENT: inputOwnerENT.value.toString(), Seats: inputSeats.value, BlockDuration: inputBlockDuration.value, StartDateTime: "2015-03-05 08:00:00.000", EndDateTime: "2015-03-05 09:00:00.000" };
+
+        ajaxHelper(uri, 'POST', event).done(function (item) {
+            alert("done");
+        });
+    }
+
+
+    function find() {
+      var id = $('#EventId').val();
+      $.getJSON(uri + '/' + id)
+          .done(function (data) {
+            $('#event').text(formatItem(data));
+          })
+          .fail(function (jqXHR, textStatus, err) {
+            $('#event').text('Error: ' + err);
+          });
+    }
+
+    function ajaxHelper(uri, method, data) {
+        //self.error(''); // Clear error message
+        return $.ajax({
+            type: method,
+            url: uri,
+            dataType: 'json',
+            contentType: 'application/json',
+            data: data ? JSON.stringify(data) : null
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            $('#event').text('Error: ' + err);
+        });
+    }
+    </script>
+</body>
+</html>

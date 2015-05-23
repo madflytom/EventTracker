@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://code.jquery.com/ui/1.11.3/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />
+    <link href="styles/site.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.3.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
+    <script src="scripts/dateTimePicker.js"></script>
+    <script src="scripts/app.js"></script>
+    <script type="text/javascript">
+        function redirectPage(url) {
+           // alert("clicked");
+            window.location.assign(url);
+        }
+    </script>
+</head>
+<body data-ng-app="eventScheduler">
+    <div>This always shows.</div>
+    <div>ToDo:
+    <ul>
+        <li>Make edit feature only open the one item that is clicked for editing</li>
+        <li>Make layout look nice</li>
+        <li>Work on registration view and logic</li>
+    </ul>
+    
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <ui-view></ui-view>
+        </div>
+
+
+    </div>
+    <script type="text/ng-template" id="/home.html">
+        <div class="panel panel-default" ng-repeat="item in events | orderBy:'-StartDateTime'">
+            <div class="panel-heading">
+                <h2 class="panel-title">{{item.Title}}  {{item.EventId}}</h2>
+            </div>
+            <div class="panel-body">
+                <table>
+                    <tr><td>Description: </td><td>{{item.Description}}</td></tr>
+                    <tr>
+                        <td>Location: </td>
+                        <td>
+                            {{item.Location}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Start Date/Time: </td>
+                        <td>
+                            {{item.StartDateTime}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>End Date/Time: </td>
+                        <td>
+                            {{item.EndDateTime}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Block Duration (each):</td>
+                        <td>
+                            {{item.BlockDuration}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Owner ENT Username: </td>
+                        <td>
+                            {{item.OwnerENT}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td># of Seats per Block: </td>
+                        <td>{{item.Seats}}</td>
+                    </tr>
+                    <tr>
+                        <td><input type="button" onclick="redirectPage('/index.html#/edit')" value="Edit" /></td>
+                        <td></td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="/edit.html">
+        <div class="panel panel-default" ng-repeat="item in events | orderBy:'-StartDateTime'">
+            <div class="panel-heading">
+                <h2 class="panel-title">{{item.Title}}  {{item.EventId}}</h2>
+            </div>
+            <div class="panel-body">
+                <table>
+                    <tr><td>Title: </td><td><input type="text" class="form-control" id="inputTitle" data-ng-model="item.Title" /></td></tr>
+                    <tr><td>Description: </td><td><input type="text" class="form-control" id="inputTitle" data-ng-model="item.Description" /></td></tr>
+                    <tr>
+                        <td>Location: </td>
+                        <td>
+                            <input type="text" class="form-control" id="inputTitle" data-ng-model="item.Location" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Start Date/Time: </td>
+                        <td>
+                            <input type="text" class="form-control" id="inputTitle" data-ng-model="item.StartDateTime" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>End Date/Time: </td>
+                        <td>
+                            <input type="text" class="form-control" id="inputTitle" data-ng-model="item.EndDateTime" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Block Duration (each):</td>
+                        <td>
+                            <input type="text" class="form-control" id="inputTitle" data-ng-model="item.BlockDuration" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Owner ENT Username: </td>
+                        <td>
+                            <input type="text" class="form-control" id="inputTitle" data-ng-model="item.OwnerENT" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td># of Seats per Block: </td>
+                        <td><input type="text" class="form-control" id="inputTitle" data-ng-model="item.Seats" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="button" ng-click="deleteEvent(item.EventId)" value="Delete" /></td>
+                        <td><input type="button" data-ng-click="save(item)" value="Save Edit" /></td>
+                    </tr>
+                </table>
+
+               
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="/create.html">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Create an Event</h2>
+            </div>
+            <div class="panel-body">
+                <form>
+                    <div class="form-group">
+                        <label for="inputTitle">Event Title</label>
+                        <input type="text" class="form-control" id="inputTitle" placeholder="Title" ng-model="title" />
+                    </div>
+                    <div class="form-group">
+                        <label for="inputLocation">Event Location</label>
+                        <input type="text" class="form-control" id="inputLocation" placeholder="Location" ng-model="location" />
+                    </div>
+                    <div class="form-group">
+                        <label for="inputSummary">Event Summary</label>
+                        <textarea class="form-control" id="inputSummary" rows="4" cols="50" placeholder="Summary" ng-model="summary"></textarea>
+                    </div>
+                    <div>
+                        <label for="inputStartDate">Start</label>
+                        <input type="datetime" class="form-control date" id="inputStartDate" placeholder="Start Date" ng-model="startDate" />
+                    </div>
+                    <div>
+                        <label for="inputEndDate">End</label>
+                        <input type="datetime" class="form-control date" id="inputEndDate" placeholder="End Date" ng-model="endDate" />
+                    </div>
+                    <div>
+                        <label for="inputDuration">Time Slot Duration</label>
+                        <input type="text" class="form-control time" id="inputDuration" placeholder="Slot Duration" ng-model="slotDuration" />
+                    </div>
+                    <div>
+                        <label for="inputSeats">Number of Seats Per Time Slot</label>
+                        <input type="number" class="form-control" id="inputSeats" placeholder="Seats per slot" ng-model="seats" />
+                    </div>
+                    <div>
+                        <input type="button" ng-click="saveEvent()" value="Submit"/>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="/signUp.html">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Sign Up</h2>
+            </div>
+            <div class="panel-body">
+                <form>
+                    <div class="form-group">
+                        <label for="spanTitle">Title: </label>
+                        <span id="spanTitle">{{title}}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="spanSummary">Summary: </label>
+                        <span id="spanSummary">{{summary}}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="spanLocation">Location: </label>
+                        <span id="spanLocation">{{location}}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputTimeSlots">TimeSlots: </label>
+                        <select id="inputTimeSlots">
+                            <option ng-repeat="item in slots track by $index" value="item">{{item.toString()}}</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </script>
+    <script>
+        $(function () {
+            $('.date').datetimepicker({
+                stepMinute: 10
+            });
+            $('.time').timepicker({
+                stepMinute: 5
+            });
+        });
+    </script>
+</body>
+</html>
