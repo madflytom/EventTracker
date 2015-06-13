@@ -22,6 +22,7 @@ namespace EventTracker.Controllers
         public IQueryable<Event> GetEvents()
         {
             var databaseEvents = db.Events;
+            
             return db.Events;
         }
 
@@ -30,11 +31,13 @@ namespace EventTracker.Controllers
         public async Task<IHttpActionResult> GetEvent(int id)
         {
             Event @event = await db.Events.FindAsync(id);
+            
             if (@event == null)
             {
                 return NotFound();
             }
-
+            //List<Block> blocks = BuildBlocks(id);
+            //foreach (Block block in blocks) { @event.Blocks.Add(block); };
             return Ok(@event);
         }
 
@@ -116,6 +119,27 @@ namespace EventTracker.Controllers
         private bool EventExists(int id)
         {
             return db.Events.Count(e => e.EventId == id) > 0;
+        }
+
+        public List<Block> BuildBlocks(int id)
+        {
+            List<Block> blockList = new List<Block>();
+            Event selectedEvent = db.Events.Find(id);
+
+            var duration = (selectedEvent.EndDateTime - selectedEvent.StartDateTime).TotalMinutes;
+            var slots = duration / selectedEvent.BlockDuration;
+            for (int i = 0; i < slots; i++)
+            {
+                DateTime startTime = selectedEvent.StartDateTime.AddMinutes(selectedEvent.BlockDuration * i);
+                blockList.Add(new Block { 
+                    BlockId=i,
+                    EventId = selectedEvent.EventId,
+                    BlockStart = startTime,
+                    BlockEnd = startTime.AddMinutes(selectedEvent.BlockDuration)
+                });
+            }
+
+            return blockList;
         }
     }
 }

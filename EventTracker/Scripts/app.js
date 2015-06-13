@@ -17,12 +17,6 @@ app.factory('events', ['$http', function($http) {
         });
     };
 
-    o.getOneEvent = function (id) {
-        return $http.get('api/Events/' + id).success(function (data) {
-            angular.copy(data, o.dataCollection);
-        });
-    };
-
     o.saveEvent = function (event) {
         //TODO: find "post" for angular
         alert(event.Title);
@@ -48,6 +42,17 @@ app.factory('events', ['$http', function($http) {
     return o;
 }]);
 
+app.factory('dataFactory', ['$http', function($http){
+    var urlBase = '/api/Events/';
+    var dataFactory = {};
+
+    dataFactory.getOneEvent = function(id) {
+        return $http.get(urlBase + id);
+        alert("done")
+    };
+
+    return dataFactory;
+}]);
 
 app.config([
     '$stateProvider',
@@ -82,15 +87,24 @@ app.config([
 
 app.controller('SingUpCtrl', [
 	'$scope',
-	function ($scope) {
-	    $scope.title = "My Event";
-	    $scope.summary = "Come get a free massage";
-	    $scope.location = "Gallery";
-	    $scope.startDate = new Date("03/02/2015 08:00");
-	    $scope.endDate = new Date("03/02/2015 16:00");
-	    $scope.slotDuration = "10";
+    'dataFactory',
+	function ($scope, dataFactory) {
+	    $scope.event;
+	    getOneEvent();
+	    alert();
+	    
+	    function getOneEvent() {
+            //TODO: figure out how to get the event number to pass through here.
+	        dataFactory.getOneEvent(21)
+            .success(function (event) {
+                $scope.event = event;
+                alert(event.Title)
+            }).error(function (error) {
+                $scope.status = 'Unable to load event data: ' + error.message;
+            });
+	    }
 
-
+        var slots = 
 	    $scope.slots = ["03/02/2015 08:00", "03/02/2015 08:10", "03/02/2015 08:20"];
 
 	}]);
